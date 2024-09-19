@@ -48,7 +48,7 @@ nav ul li a {
 /* Hero Section */
 .hero {
     background-color: #333333; /* Gray 2 */
-    height: 80vh;
+    height: 60vh;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -83,6 +83,70 @@ nav ul li a {
     color: #333333; /* Gray 2 */
 }
 
+/* Chat Section */
+.chat-section {
+    background-color: #F5F5F5;
+    padding: 30px 0;
+    display: flex;
+    justify-content: center;
+}
+
+.chat-box {
+    background-color: #fff;
+    border: 1px solid #333333; /* Gray 2 */
+    border-radius: 8px;
+    width: 100%;
+    max-width: 600px;
+    padding: 20px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+#chat-output {
+    min-height: 200px;
+    max-height: 300px;
+    overflow-y: auto;
+    margin-bottom: 20px;
+    padding: 10px;
+    background-color: #fafafa;
+    border-radius: 5px;
+}
+
+#chat-output p {
+    font-family: 'Theinhardt', sans-serif;
+    margin: 10px 0;
+}
+
+.user-message {
+    color: #8411E3; /* Purple */
+    font-weight: bold;
+}
+
+.ai-message {
+    color: #333333; /* Gray 2 */
+}
+
+#user-input {
+    width: 80%;
+    padding: 10px;
+    border: 1px solid #333333;
+    border-radius: 5px;
+    margin-right: 10px;
+}
+
+button[type="submit"] {
+    padding: 10px 20px;
+    background-color: #F6A208; /* Gold */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-family: 'Arquitecta', sans-serif;
+}
+
+button[type="submit"]:hover {
+    background-color: #8411E3; /* Purple */
+}
+
 /* Media Queries for Responsiveness */
 @media (max-width: 768px) {
     .container {
@@ -96,5 +160,9 @@ nav ul li a {
     .cta-button {
         font-size: 1rem;
         padding: 8px 20px;
+    }
+
+    #user-input {
+        width: 70%;
     }
 }
