@@ -3,43 +3,64 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Oak Owl - AI Chat for Real Estate Agents</title>
-    <link rel="stylesheet" href="styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Arquitecta&family=Theinhardt&family=Utopia&display=swap" rel="stylesheet">
-    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <title>AI Chat</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: white;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .chat-container {
+            width: 100%;
+            max-width: 600px;
+            border: 1px solid #ccc;
+            padding: 20px;
+            border-radius: 10px;
+            background-color: #f9f9f9;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        #chat-output {
+            border: 1px solid #ddd;
+            height: 300px;
+            padding: 10px;
+            overflow-y: auto;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            background-color: #fff;
+        }
+        #chat-form input {
+            width: calc(100% - 60px);
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            margin-right: 10px;
+        }
+        #chat-form button {
+            padding: 10px 20px;
+            border-radius: 5px;
+            background-color: #6200ea;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        #chat-form button:hover {
+            background-color: #3700b3;
+        }
+    </style>
 </head>
 <body>
-    <header>
-        <div class="container">
-            <img src="https://i.ibb.co/QXjrfTY/Screenshot-2024-09-19-at-3-53-20-PM.png" alt="Oak Owl Logo" class="logo">
-            <nav>
-                <ul>
-                    <li><a href="#features">Features</a></li>
-                    <li><a href="#about">About Us</a></li>
-                    <li><a href="#contact">Contact</a></li>
-                </ul>
-            </nav>
-        </div>
-    </header>
-    
-    <section class="hero">
-        <div class="hero-content">
-            <h1>AI-Powered Chat for Real Estate Agents</h1>
-            <p>Connect, manage, and enhance your real estate business with Oak Owl.</p>
-            <a href="#" class="cta-button">Get Started</a>
-        </div>
-    </section>
-
-    <!-- Chat Area -->
-    <section class="chat-section">
-        <div class="chat-box">
-            <div id="chat-output"></div>
-            <form id="chat-form">
-                <input type="text" id="user-input" placeholder="Type your question here..." required>
-                <button type="submit">Send</button>
-            </form>
-        </div>
-    </section>
+    <div class="chat-container">
+        <div id="chat-output"></div>
+        <form id="chat-form">
+            <input type="text" id="user-input" placeholder="Type your question here..." required>
+            <button type="submit">Send</button>
+        </form>
+    </div>
 
     <script>
         document.getElementById('chat-form').addEventListener('submit', async function (e) {
@@ -50,14 +71,13 @@
 
             // Display user's input
             const userText = document.createElement('p');
-            userText.classList.add('user-message');
-            userText.textContent = 'You: ' + userInput;
+            userText.innerHTML = '<strong>You:</strong> ' + userInput;
             chatOutput.appendChild(userText);
 
             // Clear the input field
             document.getElementById('user-input').value = '';
 
-            // Call the backend API (Netlify function)
+            // Call the Netlify function to send prompt to OpenAI
             const response = await fetch('/.netlify/functions/openai-function', {
                 method: 'POST',
                 headers: {
@@ -67,15 +87,15 @@
             });
 
             const data = await response.json();
-            const botResponse = data.response;
 
             // Display AI's response
             const aiText = document.createElement('p');
-            aiText.classList.add('ai-message');
-            aiText.textContent = 'AI: ' + botResponse;
+            aiText.innerHTML = '<strong>AI:</strong> ' + (data.response || "No response");
             chatOutput.appendChild(aiText);
+
+            // Scroll chat to bottom
+            chatOutput.scrollTop = chatOutput.scrollHeight;
         });
     </script>
 </body>
 </html>
-
