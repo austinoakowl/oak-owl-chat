@@ -1,0 +1,100 @@
+/* Basic Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Body and Font Settings */
+body {
+    font-family: 'Theinhardt', sans-serif;
+    background-color: #F5F5F5; /* Gray 4 */
+    color: #333333; /* Gray 2 */
+}
+
+/* Container */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Header */
+header {
+    background-color: #000000; /* Black */
+    padding: 10px 0;
+}
+
+.logo {
+    width: 150px;
+}
+
+nav ul {
+    list-style-type: none;
+    display: flex;
+    gap: 20px;
+}
+
+nav ul li a {
+    color: #F5F5F5; /* Gray 4 */
+    font-family: 'Arquitecta', sans-serif;
+    text-decoration: none;
+    font-size: 18px;
+}
+
+/* Hero Section */
+.hero {
+    background-color: #333333; /* Gray 2 */
+    height: 80vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.hero-content h1 {
+    font-family: 'Utopia', serif;
+    color: #F6A208; /* Gold */
+    font-size: 3rem;
+}
+
+.hero-content p {
+    font-family: 'Theinhardt', sans-serif;
+    color: #F5F5F5; /* Gray 4 */
+    font-size: 1.2rem;
+    margin: 20px 0;
+}
+
+.cta-button {
+    background-color: #8411E3; /* Purple */
+    color: #F5F5F5; /* Gray 4 */
+    padding: 10px 30px;
+    text-decoration: none;
+    font-family: 'Arquitecta', sans-serif;
+    font-size: 1.2rem;
+    border-radius: 5px;
+}
+
+.cta-button:hover {
+    background-color: #F6A208; /* Gold */
+    color: #333333; /* Gray 2 */
+}
+
+/* Media Queries for Responsiveness */
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column;
+    }
+
+    .hero-content h1 {
+        font-size: 2rem;
+    }
+
+    .cta-button {
+        font-size: 1rem;
+        padding: 8px 20px;
+    }
+}
