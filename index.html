@@ -31,3 +31,39 @@
     </section>
 </body>
 </html>
+
+<script>
+    document.getElementById('chat-form').addEventListener('submit', async function (e) {
+        e.preventDefault();
+
+        const userInput = document.getElementById('user-input').value;
+        const chatOutput = document.getElementById('chat-output');
+
+        // Display user's input
+        const userText = document.createElement('p');
+        userText.classList.add('user-message');
+        userText.textContent = 'You: ' + userInput;
+        chatOutput.appendChild(userText);
+
+        // Clear the input field
+        document.getElementById('user-input').value = '';
+
+        // Call the Netlify function to send prompt to OpenAI
+        const response = await fetch('/.netlify/functions/openai-function', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ prompt: userInput }),
+        });
+
+        const data = await response.json();
+        const botResponse = data.response;
+
+        // Display AI's response
+        const aiText = document.createElement('p');
+        aiText.classList.add('ai-message');
+        aiText.textContent = 'AI: ' + botResponse;
+        chatOutput.appendChild(aiText);
+    });
+</script>
