@@ -154,15 +154,14 @@
     <footer class="footer-text">Oak Owl, Inc. All Rights Reserved 2024</footer>
 
     <script>
-        let conversationHistory = [];
-
-        document.getElementById('chat-form').addEventListener('submit', async function (e) {
-    e.preventDefault(); // Prevents the form from reloading the page
+    let conversationHistory = [];
 
     const userInputField = document.getElementById('user-input');
+
+document.getElementById('chat-form').addEventListener('submit', async function (e) {
+    e.preventDefault(); // Prevents the form from reloading the page
     const userInput = userInputField.value;
     const chatOutput = document.getElementById('chat-output');
-    const loadingIndicator = document.getElementById('loading-indicator'); // Reference to the loading indicator
 
     // Add the user's message to the conversation history
     conversationHistory.push({ role: 'user', content: userInput });
@@ -177,9 +176,6 @@
 
     // Change placeholder text to "Generating Response..."
     userInputField.placeholder = 'Generating Response...';
-
-    // Show the loading indicator
-    loadingIndicator.style.display = 'block';
 
     try {
         // Only make the API call if there's at least one message in the conversationHistory array
@@ -216,9 +212,6 @@
         errorText.innerHTML = '<strong>Error:</strong> There was an issue with the request.';
         chatOutput.appendChild(errorText);
     } finally {
-        // Hide the loading indicator after the response is received
-        loadingIndicator.style.display = 'none';
-
         // Change the placeholder text back to "Type your question here..."
         userInputField.placeholder = 'Type your question here...';
     }
@@ -245,6 +238,7 @@ function formatResponse(response) {
 
     return formatted;
 }
+
 
     </script>
 
