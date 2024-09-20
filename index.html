@@ -14,7 +14,23 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
+            flex-direction: column;
         }
+
+        /* Center the logo at the top */
+        .logo-container {
+            position: absolute;
+            top: 20px;
+            display: flex;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .logo-container img {
+            width: 150px;
+            height: auto;
+        }
+
         .chat-container {
             width: 100%;
             max-width: 600px;
@@ -24,6 +40,7 @@
             background-color: #f9f9f9;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
+
         #chat-output {
             border: 1px solid #ddd;
             height: 300px;
@@ -33,32 +50,66 @@
             border-radius: 5px;
             background-color: #fff;
         }
-        #chat-form input {
-            width: calc(100% - 60px);
-            padding: 10px;
-            border-radius: 5px;
-            border: 1px solid #ccc;
-            margin-right: 10px;
+
+        /* Chat input and button styling */
+        #chat-form {
+            display: flex;
+            align-items: center;
+            width: 100%;
         }
-        #chat-form button {
-            padding: 10px 20px;
-            border-radius: 5px;
-            background-color: #6200ea;
-            color: white;
+
+        #chat-form input {
+            width: calc(100% - 60px); /* Adjust width to accommodate button */
+            padding: 10px 15px;
+            border-radius: 25px;
             border: none;
+            background-color: #f9f9f9;
+            font-size: 16px;
+            margin-right: 10px;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        #chat-form input:focus {
+            outline: none;
+        }
+
+        #chat-form button {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #6200ea;
+            border: none;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             cursor: pointer;
         }
+
+        #chat-form button img {
+            width: 20px;
+            height: 20px;
+        }
+
         #chat-form button:hover {
             background-color: #3700b3;
         }
+
     </style>
 </head>
 <body>
+
+    <!-- Company logo at the top center -->
+    <div class="logo-container">
+        <img src="https://i.ibb.co/QXjrfTY/Screenshot-2024-09-19-at-3-53-20-PM.png" alt="Company Logo">
+    </div>
+
     <div class="chat-container">
         <div id="chat-output"></div>
         <form id="chat-form">
             <input type="text" id="user-input" placeholder="Type your question here..." required>
-            <button type="submit">Send</button>
+            <button type="submit">
+                <img src="https://img.icons8.com/ios-filled/50/ffffff/filled-sent.png" alt="Send">
+            </button>
         </form>
     </div>
 
@@ -97,5 +148,6 @@
             chatOutput.scrollTop = chatOutput.scrollHeight;
         });
     </script>
+
 </body>
 </html>
