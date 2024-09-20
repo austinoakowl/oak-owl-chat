@@ -1,32 +1,39 @@
 const OpenAI = require('openai');
 
 exports.handler = async function (event, context) {
-    const { conversationHistory } = JSON.parse(event.body);  // Get the entire conversation history from the request
-
-    const openai = new OpenAI({
-        apiKey: process.env.OPENAI_API_KEY,  // Uses the environment variable from Netlify
-    });
-
+    console.log('Function called');  // Log that the function is running
     try {
-        const response = await openai.chat.completions.create({
-            model: 'gpt-4',  // Replace with the appropriate model if necessary
-            assistant_id: 'asst_eVUGfhUghz4jcZL8zKhrOj6',  // Use your custom Assistant ID here
-            messages: conversationHistory,  // Send the full conversation history
+        const { conversationHistory } = JSON.parse(event.body);  // Get the conversation history
+        console.log('Received conversationHistory:', conversationHistory);
+
+        const openai = new OpenAI({
+            apiKey: process.env.OPENAI_API_KEY,  // Make sure this is set in Netlify environment
         });
+
+        const response = await openai.chat.completions.create({
+            model: 'gpt-4',  // Ensure the correct model is used
+            assistant_id: 'asst_eVUGfhUghz4jcZL8zKhrOj6',  // Use your custom Assistant ID
+            messages: conversationHistory,  // Pass the entire conversation history
+        });
+
+        console.log('OpenAI response:', response);  // Log the full response from OpenAI
 
         return {
             statusCode: 200,
             body: JSON.stringify({
-                response: response.choices[0].message.content,  // Send back AI's response
+                response: response.choices[0].message.content,  // Send back the AI's response
             }),
         };
     } catch (error) {
+        console.error('Error calling OpenAI:', error);  // Log the error
+
         return {
             statusCode: 500,
             body: JSON.stringify({
                 error: 'Failed to call OpenAI API',
-                details: error.message,
+                details: error.message,  // Include detailed error message
             }),
         };
     }
 };
+
