@@ -1,9 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Real Estate Broker</title>
@@ -45,9 +43,9 @@
 
         /* Chat container styling */
         .chat-container {
-            width: 90%; /* Adjust to make it closer to the sides */
-            max-width: 900px; /* Increase the maximum width */
-            height: 60vh; /* Increase the height to bring it closer to the bottom */
+            width: 90%;
+            max-width: 900px;
+            height: 60vh;
             border: 1px solid #ccc;
             padding: 20px;
             border-radius: 10px;
@@ -58,7 +56,7 @@
         /* Chat output area */
         #chat-output {
             border: 1px solid #ddd;
-            height: calc(100% - 60px); /* Adjust to fit within the chat container */
+            height: calc(100% - 60px);
             padding: 10px;
             overflow-y: auto;
             margin-bottom: 10px;
@@ -75,7 +73,7 @@
 
         /* Chat input and button styling */
         #chat-form input {
-            width: calc(100% - 60px); /* Input takes the remaining width */
+            width: calc(100% - 60px);
             padding: 10px 15px;
             border-radius: 25px;
             border: none;
@@ -119,6 +117,15 @@
             font-size: 14px;
             color: #555;
         }
+
+        /* Loading text styling */
+        .loading-indicator {
+            display: none;
+            color: #6200ea;
+            font-style: italic;
+            margin-top: 10px;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -138,102 +145,104 @@
             <button type="submit">
                 <i class="fas fa-paper-plane"></i> <!-- Font Awesome arrow icon -->
             </button>
-
         </form>
+        <!-- Loading text -->
+        <div id="loading-indicator" class="loading-indicator">Processing...</div>
     </div>
 
     <!-- Footer -->
     <footer class="footer-text">Oak Owl, Inc. All Rights Reserved 2024</footer>
 
-<script>
-   let conversationHistory = [];
+    <script>
+        let conversationHistory = [];
 
-document.getElementById('chat-form').addEventListener('submit', async function (e) {
-    e.preventDefault(); // Prevents the form from reloading the page
-    console.log('Form submitted!');  // Debugging to ensure form is triggered correctly
+        document.getElementById('chat-form').addEventListener('submit', async function (e) {
+            e.preventDefault();
+            const userInput = document.getElementById('user-input').value;
+            const chatOutput = document.getElementById('chat-output');
+            const loadingIndicator = document.getElementById('loading-indicator'); // Reference to the loading indicator
 
-    const userInput = document.getElementById('user-input').value;
-    const chatOutput = document.getElementById('chat-output');
+            // Add the user's message to the conversation history
+            conversationHistory.push({ role: 'user', content: userInput });
 
-    // Add the user's message to the conversation history
-    conversationHistory.push({ role: 'user', content: userInput });
-    console.log('User input added to conversation history:', conversationHistory);  // Debugging user input
+            // Display user's input
+            const userText = document.createElement('p');
+            userText.innerHTML = '<strong>You:</strong> ' + userInput;
+            chatOutput.appendChild(userText);
 
-    // Display user's input
-    const userText = document.createElement('p');
-    userText.innerHTML = '<strong>You:</strong> ' + userInput;
-    chatOutput.appendChild(userText);
+            // Clear the input field
+            document.getElementById('user-input').value = '';
 
-    // Clear the input field
-    document.getElementById('user-input').value = '';
+            // Show the loading indicator
+            loadingIndicator.style.display = 'block';
 
-    try {
-        // Only make the API call if there's at least one message in the conversationHistory array
-        if (conversationHistory.length > 0) {
-            const response = await fetch('/.netlify/functions/openai-function', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ conversationHistory }),  // Pass full conversation history
-            });
+            try {
+                // Only make the API call if there's at least one message in the conversationHistory array
+                if (conversationHistory.length > 0) {
+                    const response = await fetch('/.netlify/functions/openai-function', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ conversationHistory }),  // Pass full conversation history
+                    });
 
-            if (!response.ok) {
-                throw new Error(`Error: ${response.statusText}`);
+                    if (!response.ok) {
+                        throw new Error(`Error: ${response.statusText}`);
+                    }
+
+                    const data = await response.json();
+
+                    // Format AI response into bullet points or paragraphs
+                    let formattedResponse = formatResponse(data.response);
+
+                    // Add the AI's response to the conversation history
+                    conversationHistory.push({ role: 'assistant', content: data.response });
+
+                    // Display AI's formatted response
+                    const aiText = document.createElement('div');
+                    aiText.innerHTML = '<strong>AI:</strong> ' + formattedResponse;
+                    chatOutput.appendChild(aiText);
+                }
+
+            } catch (error) {
+                console.error('Error in frontend:', error);
+                const errorText = document.createElement('p');
+                errorText.innerHTML = '<strong>Error:</strong> There was an issue with the request.';
+                chatOutput.appendChild(errorText);
+            } finally {
+                // Hide the loading indicator after the response is received
+                loadingIndicator.style.display = 'none';
             }
 
-            const data = await response.json();
-            console.log('OpenAI response received:', data);  // Debugging response
+            // Scroll chat to bottom
+            chatOutput.scrollTop = chatOutput.scrollHeight;
+        });
 
-            // Format AI response into bullet points or paragraphs
-            let formattedResponse = formatResponse(data.response);
+        // Function to format AI response into HTML lists or paragraphs
+        function formatResponse(response) {
+            let formatted = response;
 
-            // Add the AI's response to the conversation history
-            conversationHistory.push({ role: 'assistant', content: data.response });
+            // Convert numbered lists into bullet points
+            formatted = formatted.replace(/(\d+)\.\s+/g, '<li>');  // Replace '1. ', '2. ', etc., with '<li>'
 
-            // Display AI's formatted response
-            const aiText = document.createElement('div');
-            aiText.innerHTML = '<strong>AI:</strong> ' + formattedResponse;
-            chatOutput.appendChild(aiText);
+            // Convert bullet point lists (like "- item") into list items
+            formatted = formatted.replace(/-\s+/g, '<li>');
+
+            // Wrap all list items with <ul> tag if there's any list items found
+            if (formatted.includes('<li>')) {
+                formatted = `<ul>${formatted}</ul>`;
+            }
+
+            // Convert double newlines to paragraph breaks
+            formatted = formatted.replace(/\n\n/g, '</p><p>');
+
+            // Wrap the entire response in <p> tag for cleaner paragraph structure
+            formatted = `<p>${formatted}</p>`;
+
+            return formatted;
         }
-
-    } catch (error) {
-        console.error('Error in frontend:', error);
-        const errorText = document.createElement('p');
-        errorText.innerHTML = '<strong>Error:</strong> There was an issue with the request.';
-        chatOutput.appendChild(errorText);
-    }
-
-    // Scroll chat to bottom
-    chatOutput.scrollTop = chatOutput.scrollHeight;
-});
-
-// Function to format AI response into HTML lists or paragraphs
-function formatResponse(response) {
-    let formatted = response;
-
-    // Convert numbered lists into bullet points
-    formatted = formatted.replace(/(\d+)\.\s+/g, '<li>');  // Replace '1. ', '2. ', etc., with '<li>'
-
-    // Convert bullet point lists (like "- item") into list items
-    formatted = formatted.replace(/-\s+/g, '<li>');
-
-    // Wrap all list items with <ul> tag if there's any list items found
-    if (formatted.includes('<li>')) {
-        formatted = `<ul>${formatted}</ul>`;
-    }
-
-    // Convert double newlines to paragraph breaks
-    formatted = formatted.replace(/\n\n/g, '</p><p>');
-
-    // Wrap the entire response in <p> tag for cleaner paragraph structure
-    formatted = `<p>${formatted}</p>`;
-
-    return formatted;
-}
-
-</script>
+    </script>
 
 </body>
 </html>
-
