@@ -203,43 +203,55 @@
             // Show loading indicator
             loadingIndicator.style.display = 'block';
 
-            try {
-                if (conversationHistory.length > 0) {
-                    const response = await fetch('/.netlify/functions/openai-function', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({ conversationHistory })
-                    });
+           try {
+    if (conversationHistory.length > 0) {
+        // Create a new EventSource instance to handle streaming
+        const eventSource = new EventSource('/.netlify/functions/openai-function');
 
-                    if (!response.ok) {
-                        throw new Error(`Error: ${response.statusText}`);
-                    }
+        // Handle the messages (streaming data) from the backend
+        eventSource.onmessage = function(event) {
+            const aiResponse = event.data;
 
-                    const data = await response.json();
+            // Format AI response (if needed)
+            let formattedResponse = formatResponse(aiResponse);
 
-                    // Format AI response
-                    let formattedResponse = formatResponse(data.response);
+            // Add AI response to conversation history
+            conversationHistory.push({ role: 'assistant', content: aiResponse });
 
-                    // Add AI response to conversation history
-                    conversationHistory.push({ role: 'assistant', content: data.response });
+            // Display AI response
+            const aiText = document.createElement('div');
+            aiText.innerHTML = '<strong style="display: inline;">AI: </strong><span style="display: inline;">' + formattedResponse + '</span>';
+            chatOutput.appendChild(aiText);
 
-                    // Display AI response
-                    const aiText = document.createElement('div');
-                    aiText.innerHTML = '<strong style="display: inline;">AI: </strong><span style="display: inline;">' + formattedResponse + '</span>';
-                    chatOutput.appendChild(aiText);
-                }
+            // Scroll chat to bottom
+            chatOutput.scrollTop = chatOutput.scrollHeight;
+        };
 
-            } catch (error) {
-                console.error('Error:', error);
-                const errorText = document.createElement('p');
-                errorText.innerHTML = '<strong>Error:</strong> There was an issue with the request.';
-                chatOutput.appendChild(errorText);
-            } finally {
-                userInputField.placeholder = 'Type your question here...';
-                loadingIndicator.style.display = 'none'; // Hide loading indicator
-            }
+        // Handle errors during streaming
+        eventSource.onerror = function(event) {
+            console.error('Error in streaming response:', event);
+            const errorText = document.createElement('p');
+            errorText.innerHTML = '<strong>Error:</strong> There was an issue with the request.';
+            chatOutput.appendChild(errorText);
+            eventSource.close();  // Close the EventSource in case of an error
+        };
+
+        // Optionally, handle when the connection to the server is closed
+        eventSource.onclose = function() {
+            console.log('Connection to the server closed.');
+            eventSource.close();  // Close the EventSource when done
+        };
+    }
+} catch (error) {
+    console.error('Error in frontend:', error);
+    const errorText = document.createElement('p');
+    errorText.innerHTML = '<strong>Error:</strong> There was an issue with the request.';
+    chatOutput.appendChild(errorText);
+} finally {
+    userInputField.placeholder = 'Type your question here...';
+    loadingIndicator.style.display = 'none'; // Hide loading indicator
+}
+
 
             // Scroll chat to bottom
             chatOutput.scrollTop = chatOutput.scrollHeight;
