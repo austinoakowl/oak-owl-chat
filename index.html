@@ -146,13 +146,16 @@
     <footer class="footer-text">Oak Owl, Inc. All Rights Reserved 2024</footer>
 
 <script>
-    let conversationHistory = [];
+   let conversationHistory = [];
 
-   document.getElementById('chat-form').addEventListener('submit', async function (e) {
+document.getElementById('chat-form').addEventListener('submit', async function (e) {
     e.preventDefault(); // Prevents the form from reloading the page
 
     const userInput = document.getElementById('user-input').value;
     const chatOutput = document.getElementById('chat-output');
+
+    // Add the user's message to the conversation history
+    conversationHistory.push({ role: 'user', content: userInput });
 
     // Display user's input
     const userText = document.createElement('p');
@@ -163,13 +166,13 @@
     document.getElementById('user-input').value = '';
 
     try {
-        console.log('Sending request to Netlify function with user input:', userInput);
+        // Send the conversation history to the backend function
         const response = await fetch('/.netlify/functions/openai-function', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ conversationHistory }),  // Ensure full conversation history is sent
+            body: JSON.stringify({ conversationHistory }),  // Pass full conversation history
         });
 
         if (!response.ok) {
@@ -177,7 +180,9 @@
         }
 
         const data = await response.json();
-        console.log('Received response from OpenAI:', data);
+
+        // Add the AI's response to the conversation history
+        conversationHistory.push({ role: 'assistant', content: data.response });
 
         // Display AI's response
         const aiText = document.createElement('p');
