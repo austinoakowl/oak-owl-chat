@@ -19,7 +19,7 @@ exports.handler = async function (event, context) {
 
         // Call OpenAI
         const response = await openai.chat.completions.create({
-            model: 'gpt-4',  // You can change this to 'gpt-3.5-turbo' if needed
+            model: 'gpt-3.5-turbo',  // You can change this to 'gpt-3.5-turbo' if needed
             messages: conversationHistory,  // Pass the entire conversation history
         });
 
