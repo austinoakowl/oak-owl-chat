@@ -136,7 +136,7 @@
     </div>
 
     <!-- Add heading text between logo and chat box -->
-    <h1 class="header-text">AI Real Estate Broker</h1>
+    <h1 class="header-text">AI Real Estate Agent Assistant </h1>
 
     <div class="chat-container">
         <div id="chat-output"></div>
@@ -157,67 +157,73 @@
         let conversationHistory = [];
 
         document.getElementById('chat-form').addEventListener('submit', async function (e) {
-            e.preventDefault();
-            const userInput = document.getElementById('user-input').value;
-            const chatOutput = document.getElementById('chat-output');
-            const loadingIndicator = document.getElementById('loading-indicator'); // Reference to the loading indicator
+    e.preventDefault();
+    const userInputField = document.getElementById('user-input');
+    const userInput = userInputField.value;
+    const chatOutput = document.getElementById('chat-output');
+    const loadingIndicator = document.getElementById('loading-indicator'); // Reference to the loading indicator
 
-            // Add the user's message to the conversation history
-            conversationHistory.push({ role: 'user', content: userInput });
+    // Add the user's message to the conversation history
+    conversationHistory.push({ role: 'user', content: userInput });
 
-            // Display user's input
-            const userText = document.createElement('p');
-            userText.innerHTML = '<strong>You:</strong> ' + userInput;
-            chatOutput.appendChild(userText);
+    // Display user's input
+    const userText = document.createElement('p');
+    userText.innerHTML = '<strong>You:</strong> ' + userInput;
+    chatOutput.appendChild(userText);
 
-            // Clear the input field
-            document.getElementById('user-input').value = '';
+    // Clear the input field
+    userInputField.value = '';
 
-            // Show the loading indicator
-            loadingIndicator.style.display = 'block';
+    // Change placeholder text to "Generating Response..."
+    userInputField.placeholder = 'Processing...';
 
-            try {
-                // Only make the API call if there's at least one message in the conversationHistory array
-                if (conversationHistory.length > 0) {
-                    const response = await fetch('/.netlify/functions/openai-function', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({ conversationHistory }),  // Pass full conversation history
-                    });
+    // Show the loading indicator
+    loadingIndicator.style.display = 'block';
 
-                    if (!response.ok) {
-                        throw new Error(`Error: ${response.statusText}`);
-                    }
+    try {
+        if (conversationHistory.length > 0) {
+            const response = await fetch('/.netlify/functions/openai-function', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ conversationHistory }),
+            });
 
-                    const data = await response.json();
-
-                    // Format AI response into bullet points or paragraphs
-                    let formattedResponse = formatResponse(data.response);
-
-                    // Add the AI's response to the conversation history
-                    conversationHistory.push({ role: 'assistant', content: data.response });
-
-                    // Display AI's formatted response
-                    const aiText = document.createElement('div');
-                    aiText.innerHTML = '<strong>AI:</strong> ' + formattedResponse;
-                    chatOutput.appendChild(aiText);
-                }
-
-            } catch (error) {
-                console.error('Error in frontend:', error);
-                const errorText = document.createElement('p');
-                errorText.innerHTML = '<strong>Error:</strong> There was an issue with the request.';
-                chatOutput.appendChild(errorText);
-            } finally {
-                // Hide the loading indicator after the response is received
-                loadingIndicator.style.display = 'none';
+            if (!response.ok) {
+                throw new Error(`Error: ${response.statusText}`);
             }
 
-            // Scroll chat to bottom
-            chatOutput.scrollTop = chatOutput.scrollHeight;
-        });
+            const data = await response.json();
+
+            // Format AI response into bullet points or paragraphs
+            let formattedResponse = formatResponse(data.response);
+
+            // Add the AI's response to the conversation history
+            conversationHistory.push({ role: 'assistant', content: data.response });
+
+            // Display AI's formatted response
+            const aiText = document.createElement('div');
+            aiText.innerHTML = '<strong>AI:</strong> ' + formattedResponse;
+            chatOutput.appendChild(aiText);
+        }
+
+    } catch (error) {
+        console.error('Error in frontend:', error);
+        const errorText = document.createElement('p');
+        errorText.innerHTML = '<strong>Error:</strong> There was an issue with the request.';
+        chatOutput.appendChild(errorText);
+    } finally {
+        // Hide the loading indicator after the response is received
+        loadingIndicator.style.display = 'none';
+
+        // Change the placeholder text back to "Type your question here..."
+        userInputField.placeholder = 'Type your question here...';
+    }
+
+    // Scroll chat to bottom
+    chatOutput.scrollTop = chatOutput.scrollHeight;
+});
 
         // Function to format AI response into HTML lists or paragraphs
         function formatResponse(response) {
