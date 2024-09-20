@@ -156,7 +156,8 @@
         let conversationHistory = [];
 
         document.getElementById('chat-form').addEventListener('submit', async function (e) {
-    e.preventDefault();
+    e.preventDefault(); // Prevents the form from reloading the page
+
     const userInputField = document.getElementById('user-input');
     const userInput = userInputField.value;
     const chatOutput = document.getElementById('chat-output');
@@ -180,13 +181,14 @@
     loadingIndicator.style.display = 'block';
 
     try {
+        // Only make the API call if there's at least one message in the conversationHistory array
         if (conversationHistory.length > 0) {
             const response = await fetch('/.netlify/functions/openai-function', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ conversationHistory }),
+                body: JSON.stringify({ conversationHistory }),  // Pass full conversation history
             });
 
             if (!response.ok) {
@@ -224,29 +226,25 @@
     chatOutput.scrollTop = chatOutput.scrollHeight;
 });
 
-        // Function to format AI response into HTML lists or paragraphs
-        function formatResponse(response) {
-            let formatted = response;
+// Function to format AI response into HTML lists or paragraphs
+function formatResponse(response) {
+    let formatted = response;
 
-            // Convert numbered lists into bullet points
-            formatted = formatted.replace(/(\d+)\.\s+/g, '<li>');  // Replace '1. ', '2. ', etc., with '<li>'
+    // Convert numbered lists into bullet points
+    formatted = formatted.replace(/\d\.\s/g, '<li>');  // Replace '1. ' with '<li>'
+    formatted = formatted.replace(/<\/li>\s+/g, '</li>'); // Close the <li> tags properly
 
-            // Convert bullet point lists (like "- item") into list items
-            formatted = formatted.replace(/-\s+/g, '<li>');
+    // Wrap the entire list with <ul> if it detects any bullet points
+    if (formatted.includes('<li>')) {
+        formatted = `<ul>${formatted}</ul>`;
+    }
 
-            // Wrap all list items with <ul> tag if there's any list items found
-            if (formatted.includes('<li>')) {
-                formatted = `<ul>${formatted}</ul>`;
-            }
+    // Convert double newlines to paragraph breaks for cleaner text blocks
+    formatted = formatted.replace(/\n\n/g, '<p>');
 
-            // Convert double newlines to paragraph breaks
-            formatted = formatted.replace(/\n\n/g, '</p><p>');
+    return formatted;
+}
 
-            // Wrap the entire response in <p> tag for cleaner paragraph structure
-            formatted = `<p>${formatted}</p>`;
-
-            return formatted;
-        }
     </script>
 
 </body>
