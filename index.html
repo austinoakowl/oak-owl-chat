@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Chat</title>
+    <title>AI Real Estate Broker</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -31,9 +31,20 @@
             height: auto;
         }
 
+        /* Add header text between logo and chat box */
+        .header-text {
+            font-size: 32px; /* Adjust this to match your logo size */
+            text-align: center;
+            margin-top: 100px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        /* Chat container styling */
         .chat-container {
-            width: 100%;
-            max-width: 600px;
+            width: 90%; /* Adjust to make it closer to the sides */
+            max-width: 900px; /* Increase the maximum width */
+            height: 60vh; /* Increase the height to bring it closer to the bottom */
             border: 1px solid #ccc;
             padding: 20px;
             border-radius: 10px;
@@ -41,9 +52,10 @@
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
 
+        /* Chat output area */
         #chat-output {
             border: 1px solid #ddd;
-            height: 300px;
+            height: calc(100% - 60px); /* Adjust to fit within the chat container */
             padding: 10px;
             overflow-y: auto;
             margin-bottom: 10px;
@@ -51,15 +63,16 @@
             background-color: #fff;
         }
 
-        /* Chat input and button styling */
+        /* Chat form styling */
         #chat-form {
             display: flex;
             align-items: center;
             width: 100%;
         }
 
+        /* Chat input and button styling */
         #chat-form input {
-            width: calc(100% - 60px); /* Adjust width to accommodate button */
+            width: calc(100% - 60px); /* Input takes the remaining width */
             padding: 10px 15px;
             border-radius: 25px;
             border: none;
@@ -94,6 +107,15 @@
             background-color: #3700b3;
         }
 
+        /* Footer styling */
+        .footer-text {
+            position: absolute;
+            bottom: 10px;
+            width: 100%;
+            text-align: center;
+            font-size: 14px;
+            color: #555;
+        }
     </style>
 </head>
 <body>
@@ -102,6 +124,9 @@
     <div class="logo-container">
         <img src="https://i.ibb.co/QXjrfTY/Screenshot-2024-09-19-at-3-53-20-PM.png" alt="Company Logo">
     </div>
+
+    <!-- Add heading text between logo and chat box -->
+    <h1 class="header-text">AI Real Estate Broker</h1>
 
     <div class="chat-container">
         <div id="chat-output"></div>
@@ -113,12 +138,20 @@
         </form>
     </div>
 
+    <!-- Footer -->
+    <footer class="footer-text">Oak Owl, Inc. All Rights Reserved 2024</footer>
+
     <script>
+        let conversationHistory = [];
+
         document.getElementById('chat-form').addEventListener('submit', async function (e) {
             e.preventDefault();
 
             const userInput = document.getElementById('user-input').value;
             const chatOutput = document.getElementById('chat-output');
+
+            // Append user's input to conversation history
+            conversationHistory.push({ role: 'user', content: userInput });
 
             // Display user's input
             const userText = document.createElement('p');
@@ -128,16 +161,19 @@
             // Clear the input field
             document.getElementById('user-input').value = '';
 
-            // Call the Netlify function to send prompt to OpenAI
+            // Call the Netlify function to send the full conversation to OpenAI
             const response = await fetch('/.netlify/functions/openai-function', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ prompt: userInput }),
+                body: JSON.stringify({ conversation: conversationHistory }),
             });
 
             const data = await response.json();
+
+            // Append AI response to conversation history
+            conversationHistory.push({ role: 'assistant', content: data.response });
 
             // Display AI's response
             const aiText = document.createElement('p');
