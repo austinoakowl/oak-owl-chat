@@ -93,9 +93,9 @@ body {
     cursor: pointer;
 }
 
-#chat-form button img {
-    width: 20px;
-    height: 20px;
+#chat-form button i {
+    color: white;
+    font-size: 20px;
 }
 
 #chat-form button:hover {
