@@ -205,27 +205,40 @@
 
            try {
     if (conversationHistory.length > 0) {
-        // Create a new EventSource instance to handle streaming
-        const eventSource = new EventSource('/.netlify/functions/openai-function');
+// Create a new EventSource instance to handle streaming
+const eventSource = new EventSource('/.netlify/functions/openai-function');
 
-        // Handle the messages (streaming data) from the backend
-        eventSource.onmessage = function(event) {
-            const aiResponse = event.data;
+// Handle the messages (streaming data) from the backend
+eventSource.onmessage = function(event) {
+    const aiResponse = event.data;
 
-            // Format AI response (if needed)
-            let formattedResponse = formatResponse(aiResponse);
+    // Format AI response (if needed)
+    let formattedResponse = formatResponse(aiResponse);
 
-            // Add AI response to conversation history
-            conversationHistory.push({ role: 'assistant', content: aiResponse });
+    // Add AI response to conversation history
+    conversationHistory.push({ role: 'assistant', content: aiResponse });
 
-            // Display AI response
-            const aiText = document.createElement('div');
-            aiText.innerHTML = '<strong style="display: inline;">AI: </strong><span style="display: inline;">' + formattedResponse + '</span>';
-            chatOutput.appendChild(aiText);
+    // Display AI response
+    const aiText = document.createElement('div');
+    aiText.innerHTML = '<strong style="display: inline;">AI: </strong><span style="display: inline;">' + formattedResponse + '</span>';
+    chatOutput.appendChild(aiText);
 
-            // Scroll chat to bottom
-            chatOutput.scrollTop = chatOutput.scrollHeight;
-        };
+    // Scroll chat to bottom
+    chatOutput.scrollTop = chatOutput.scrollHeight;
+};
+
+// Handle errors from EventSource
+eventSource.onerror = function(error) {
+    console.error('Error in streaming response:', error);
+
+    // Add error message to the chat output
+    const errorText = document.createElement('p');
+    errorText.innerHTML = '<strong>Error:</strong> There was an issue with the request.';
+    chatOutput.appendChild(errorText);
+
+    // Close the EventSource connection on error
+    eventSource.close();
+};
 
         // Handle errors during streaming
         eventSource.onerror = function(event) {
