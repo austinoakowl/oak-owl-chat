@@ -29,7 +29,7 @@ exports.handler = async function (event, context) {
             body: await openai.chat.completions.create({
                 model: 'gpt-3.5-turbo',  // Ensure this matches your model choice
                 messages: conversationHistory,  // Pass the entire conversation history
-                stream: true,  // Enable streaming
+                stream: false,  // Enable streaming
             }, {
                 responseType: 'stream',  // Set response type to stream
             }).then((response) => {
