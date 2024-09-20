@@ -228,8 +228,8 @@ eventSource.onmessage = function(event) {
 };
 
 // Handle errors from EventSource
-eventSource.onerror = function(error) {
-    console.error('Error in streaming response:', error);
+eventSource.onerror = function(event) {
+    console.error('Error in streaming response:', event);
 
     // Add error message to the chat output
     const errorText = document.createElement('p');
@@ -240,20 +240,17 @@ eventSource.onerror = function(error) {
     eventSource.close();
 };
 
-        // Handle errors during streaming
-        eventSource.onerror = function(event) {
-            console.error('Error in streaming response:', event);
-            const errorText = document.createElement('p');
-            errorText.innerHTML = '<strong>Error:</strong> There was an issue with the request.';
-            chatOutput.appendChild(errorText);
-            eventSource.close();  // Close the EventSource in case of an error
-        };
+// Optionally, handle when the connection to the server is closed
+eventSource.onclose = function() {
+    console.log('Connection to the server closed.');
+    eventSource.close();  // Close the EventSource when done
+};
 
-        // Optionally, handle when the connection to the server is closed
-        eventSource.onclose = function() {
-            console.log('Connection to the server closed.');
-            eventSource.close();  // Close the EventSource when done
-        };
+// Handle connection opening (optional)
+eventSource.onopen = function() {
+    console.log('Connection to server established.');
+};
+
     }
 } catch (error) {
     console.error('Error in frontend:', error);
