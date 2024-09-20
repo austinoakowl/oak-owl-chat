@@ -150,11 +150,14 @@
 
 document.getElementById('chat-form').addEventListener('submit', async function (e) {
     e.preventDefault(); // Prevents the form from reloading the page
+    console.log('Form submitted!');  // Debugging to ensure form is triggered correctly
+
     const userInput = document.getElementById('user-input').value;
     const chatOutput = document.getElementById('chat-output');
 
     // Add the user's message to the conversation history
     conversationHistory.push({ role: 'user', content: userInput });
+    console.log('User input added to conversation history:', conversationHistory);  // Debugging user input
 
     // Display user's input
     const userText = document.createElement('p');
@@ -180,6 +183,7 @@ document.getElementById('chat-form').addEventListener('submit', async function (
             }
 
             const data = await response.json();
+            console.log('OpenAI response received:', data);  // Debugging response
 
             // Format AI response into bullet points or paragraphs
             let formattedResponse = formatResponse(data.response);
