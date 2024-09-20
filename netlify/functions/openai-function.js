@@ -16,24 +16,25 @@ exports.handler = async function (event, context) {
             apiKey: process.env.OPENAI_API_KEY,
         });
 
-        // Enable streaming for real-time responses
+        // Stream response instead of waiting for the entire response at once
         const responseStream = await openai.chat.completions.create({
-            model: 'gpt-3.5-turbo',
+            model: 'gpt-4',  // Assuming you are using GPT-4
             messages: conversationHistory,
-            stream: true,
+            stream: true, // Enable streaming
         });
 
         return {
             statusCode: 200,
             headers: {
-                'Content-Type': 'text/event-stream',  // Make sure to use event-stream type
+                'Content-Type': 'text/event-stream',
                 'Cache-Control': 'no-cache',
-                Connection: 'keep-alive',
+                'Connection': 'keep-alive',
             },
-            body: responseStream,  // The streaming response
+            body: responseStream,  // Directly stream the response
         };
     } catch (error) {
         console.error('Error in OpenAI:', error);
+
         return {
             statusCode: 500,
             body: JSON.stringify({
