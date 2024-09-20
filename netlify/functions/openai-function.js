@@ -9,7 +9,8 @@ exports.handler = async function (event, context) {
 
     try {
         const response = await openai.chat.completions.create({
-            model: 'gpt-3.5-turbo',  // Or use 'text-davinci-003' if preferred
+            model: 'gpt-4',  // Replace with 'gpt-4' if your assistant is based on GPT-4
+            assistant_id: 'asst_eVUGfhUghz4jcZL8zKhrOj6',  // Use your custom Assistant ID here
             messages: [{ role: 'user', content: prompt }],
         });
 
@@ -29,3 +30,4 @@ exports.handler = async function (event, context) {
         };
     }
 };
+
