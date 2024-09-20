@@ -5,11 +5,19 @@ exports.handler = async function (event, context) {
         const { conversationHistory } = JSON.parse(event.body);  // Get the conversation history
         console.log('Received conversationHistory:', conversationHistory);
 
+        // Ensure that conversationHistory isn't empty before calling OpenAI
+        if (!conversationHistory || conversationHistory.length === 0) {
+            return {
+                statusCode: 400,
+                body: JSON.stringify({ error: 'conversationHistory is empty' }),
+            };
+        }
+
         const openai = new OpenAI({
             apiKey: process.env.OPENAI_API_KEY,  // Make sure this is set in Netlify environment
         });
 
-        // Call OpenAI without using assistant_id
+        // Call OpenAI
         const response = await openai.chat.completions.create({
             model: 'gpt-4',  // You can change this to 'gpt-3.5-turbo' if needed
             messages: conversationHistory,  // Pass the entire conversation history
