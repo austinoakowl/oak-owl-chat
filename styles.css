@@ -90,6 +90,33 @@ body {
     margin-top: 10px;
 }
 
+#chat-form button {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%; /* Keep this to ensure the button is circular */
+    background-color: transparent; /* Set the background color to transparent */
+    border: 2px solid #6200ea; /* Optional: Add a thin border around the circle */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    padding: 0; /* Remove padding */
+}
+
+#chat-form button i {
+    color: #6200ea; /* Change this to the desired color for the arrow */
+}
+
+#chat-form button:hover {
+    background-color: transparent; /* Ensure the hover background remains transparent */
+}
+
+#chat-form button:focus {
+    outline: none; /* Remove focus outline */
+    box-shadow: none; /* Remove any focus shadow */
+}
+
+
 /* Media query for mobile devices */
 @media (max-width: 600px) {
     .chat-container {
