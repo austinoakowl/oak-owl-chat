@@ -3,44 +3,34 @@ const OpenAI = require('openai');
 exports.handler = async function (event, context) {
     try {
         const { conversationHistory } = JSON.parse(event.body);
-        console.log('Received conversationHistory:', conversationHistory);
-
-        if (!conversationHistory || conversationHistory.length === 0) {
-            return {
-                statusCode: 400,
-                body: JSON.stringify({ error: 'conversationHistory is empty' }),
-            };
-        }
 
         const openai = new OpenAI({
-            apiKey: process.env.OPENAI_API_KEY,
+            apiKey: process.env.OPENAI_API_KEY,  // Make sure this is set in Netlify environment
         });
 
-        // Stream response instead of waiting for the entire response at once
-        const responseStream = await openai.chat.completions.create({
-            model: 'gpt-4',  // Assuming you are using GPT-4
+        // Call OpenAI with stream enabled
+        const response = await openai.chat.completions.create({
+            model: 'gpt-4',  // or 'gpt-3.5-turbo'
             messages: conversationHistory,
-            stream: true, // Enable streaming
+            stream: true,  // Stream enabled
         });
 
         return {
             statusCode: 200,
             headers: {
-                'Content-Type': 'text/event-stream',
+                'Content-Type': 'text/event-stream',  // Required for streaming
                 'Cache-Control': 'no-cache',
-                'Connection': 'keep-alive',
+                Connection: 'keep-alive',
             },
-            body: responseStream,  // Directly stream the response
+            body: response.body.pipeTo( /* Add a function to process streaming data here */ ),
         };
+
     } catch (error) {
         console.error('Error in OpenAI:', error);
 
         return {
             statusCode: 500,
-            body: JSON.stringify({
-                error: 'Failed to call OpenAI API',
-                details: error.message,
-            }),
+            body: JSON.stringify({ error: 'Error in OpenAI API', details: error.message }),
         };
     }
 };
