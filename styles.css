@@ -1,168 +1,71 @@
-/* Basic Reset */
-* {
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: white;
     margin: 0;
     padding: 0;
-    box-sizing: border-box;
-}
-
-/* Body and Font Settings */
-body {
-    font-family: 'Theinhardt', sans-serif;
-    background-color: #F5F5F5; /* Gray 4 */
-    color: #333333; /* Gray 2 */
-}
-
-/* Container */
-.container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
+    height: 100vh;
+    flex-direction: column;
 }
 
-/* Header */
-header {
-    background-color: #000000; /* Black */
-    padding: 10px 0;
+/* Center the logo at the top */
+.logo-container {
+    position: absolute;
+    top: 20px;
+    display: flex;
+    justify-content: center;
+    width: 100%;
 }
 
-.logo {
+.logo-container img {
     width: 150px;
+    height: auto;
 }
 
-nav ul {
-    list-style-type: none;
-    display: flex;
-    gap: 20px;
-}
-
-nav ul li a {
-    color: #F5F5F5; /* Gray 4 */
-    font-family: 'Arquitecta', sans-serif;
-    text-decoration: none;
-    font-size: 18px;
-}
-
-/* Hero Section */
-.hero {
-    background-color: #333333; /* Gray 2 */
-    height: 60vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-}
-
-.hero-content h1 {
-    font-family: 'Utopia', serif;
-    color: #F6A208; /* Gold */
-    font-size: 3rem;
-}
-
-.hero-content p {
-    font-family: 'Theinhardt', sans-serif;
-    color: #F5F5F5; /* Gray 4 */
-    font-size: 1.2rem;
-    margin: 20px 0;
-}
-
-.cta-button {
-    background-color: #8411E3; /* Purple */
-    color: #F5F5F5; /* Gray 4 */
-    padding: 10px 30px;
-    text-decoration: none;
-    font-family: 'Arquitecta', sans-serif;
-    font-size: 1.2rem;
-    border-radius: 5px;
-}
-
-.cta-button:hover {
-    background-color: #F6A208; /* Gold */
-    color: #333333; /* Gray 2 */
-}
-
-/* Chat Section */
-.chat-section {
-    background-color: #F5F5F5;
-    padding: 30px 0;
-    display: flex;
-    justify-content: center;
-}
-
-.chat-box {
-    background-color: #fff;
-    border: 1px solid #333333; /* Gray 2 */
-    border-radius: 8px;
+/* Chat container setup */
+.chat-container {
     width: 100%;
     max-width: 600px;
     padding: 20px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    position: fixed;
+    bottom: 20px;
+    display: flex;
+    align-items: center;
+    background-color: #f1f1f1;
+    border-radius: 30px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
-#chat-output {
-    min-height: 200px;
-    max-height: 300px;
-    overflow-y: auto;
-    margin-bottom: 20px;
-    padding: 10px;
-    background-color: #fafafa;
-    border-radius: 5px;
-}
-
-#chat-output p {
-    font-family: 'Theinhardt', sans-serif;
-    margin: 10px 0;
-}
-
-.user-message {
-    color: #8411E3; /* Purple */
-    font-weight: bold;
-}
-
-.ai-message {
-    color: #333333; /* Gray 2 */
-}
-
-#user-input {
-    width: 80%;
-    padding: 10px;
-    border: 1px solid #333333;
-    border-radius: 5px;
-    margin-right: 10px;
-}
-
-button[type="submit"] {
-    padding: 10px 20px;
-    background-color: #F6A208; /* Gold */
-    color: white;
+#chat-form input {
+    width: calc(100% - 60px); /* Input will take the remaining width after the button */
+    padding: 10px 15px;
+    border-radius: 25px;
     border: none;
-    border-radius: 5px;
+    background-color: #f9f9f9;
+    font-size: 16px;
+    margin-right: 10px;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+#chat-form input:focus {
+    outline: none;
+}
+
+#chat-form button {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #007aff;
+    border: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     cursor: pointer;
-    font-family: 'Arquitecta', sans-serif;
 }
 
-button[type="submit"]:hover {
-    background-color: #8411E3; /* Purple */
-}
-
-/* Media Queries for Responsiveness */
-@media (max-width: 768px) {
-    .container {
-        flex-direction: column;
-    }
-
-    .hero-content h1 {
-        font-size: 2rem;
-    }
-
-    .cta-button {
-        font-size: 1rem;
-        padding: 8px 20px;
-    }
-
-    #user-input {
-        width: 70%;
-    }
+#chat-form button img {
+    width: 20px;
+    height: 20px;
 }
