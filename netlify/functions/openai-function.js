@@ -17,20 +17,24 @@ exports.handler = async function (event, context) {
             apiKey: process.env.OPENAI_API_KEY,  // Make sure this is set in Netlify environment
         });
 
-        // Call OpenAI
-        const response = await openai.chat.completions.create({
-            model: 'gpt-3.5-turbo',  // You can change this to 'gpt-3.5-turbo' if needed
+        // Initiating a streaming call to OpenAI
+        const responseStream = await openai.chat.completions.create({
+            model: 'gpt-3.5-turbo',  // You can change this to 'gpt-4' if needed
             messages: conversationHistory,  // Pass the entire conversation history
+            stream: true,  // Enable streaming
         });
 
-        console.log('OpenAI response:', response);  // Log the full response from OpenAI
-
+        // Create a stream to handle data chunks as they come in
         return {
             statusCode: 200,
-            body: JSON.stringify({
-                response: response.choices[0].message.content,  // Send back the AI's response
-            }),
+            headers: {
+                'Content-Type': 'text/event-stream',
+                'Cache-Control': 'no-cache',
+                'Connection': 'keep-alive',
+            },
+            body: responseStream,
         };
+
     } catch (error) {
         console.error('Error calling OpenAI:', error);  // Log the error
 
