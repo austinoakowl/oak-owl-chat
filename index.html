@@ -145,53 +145,60 @@
     <!-- Footer -->
     <footer class="footer-text">Oak Owl, Inc. All Rights Reserved 2024</footer>
 
-    <script>
-        document.getElementById('chat-form').addEventListener('submit', async function (e) {
-            e.preventDefault(); // Prevents the form from reloading the page
-            console.log('Form submitted!'); // Add this line to check if the event listener is working
+<script>
+    let conversationHistory = [];
 
+    document.getElementById('chat-form').addEventListener('submit', async function (e) {
+        e.preventDefault(); // Prevents the form from reloading the page
 
-            const userInput = document.getElementById('user-input').value;
-            const chatOutput = document.getElementById('chat-output');
+        const userInput = document.getElementById('user-input').value;
+        const chatOutput = document.getElementById('chat-output');
 
-            // Display user's input
-            const userText = document.createElement('p');
-            userText.innerHTML = '<strong>You:</strong> ' + userInput;
-            chatOutput.appendChild(userText);
+        // Add user's input to conversation history
+        conversationHistory.push({ role: 'user', content: userInput });
 
-            // Clear the input field
-            document.getElementById('user-input').value = '';
+        // Display user's input in the chat
+        const userText = document.createElement('p');
+        userText.innerHTML = '<strong>You:</strong> ' + userInput;
+        chatOutput.appendChild(userText);
 
-            try {
-                const response = await fetch('/.netlify/functions/openai-function', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ prompt: userInput }),
-                });
+        // Clear the input field
+        document.getElementById('user-input').value = '';
 
-                if (!response.ok) {
-                    throw new Error(`Error: ${response.statusText}`);
-                }
+        try {
+            const response = await fetch('/.netlify/functions/openai-function', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ conversationHistory }), // Send the entire conversation history
+            });
 
-                const data = await response.json();
-
-                // Display AI's response
-                const aiText = document.createElement('p');
-                aiText.innerHTML = '<strong>AI:</strong> ' + (data.response || "No response from OpenAI");
-                chatOutput.appendChild(aiText);
-
-            } catch (error) {
-                console.error('Error:', error);
-                const errorText = document.createElement('p');
-                errorText.innerHTML = '<strong>Error:</strong> There was an issue with the request.';
-                chatOutput.appendChild(errorText);
+            if (!response.ok) {
+                throw new Error(`Error: ${response.statusText}`);
             }
 
-            // Scroll chat to bottom
-            chatOutput.scrollTop = chatOutput.scrollHeight;
-        });
-    </script>
+            const data = await response.json();
+
+            // Add AI's response to conversation history
+            conversationHistory.push({ role: 'assistant', content: data.response });
+
+            // Display AI's response in the chat
+            const aiText = document.createElement('p');
+            aiText.innerHTML = '<strong>AI:</strong> ' + (data.response || "No response from OpenAI");
+            chatOutput.appendChild(aiText);
+
+        } catch (error) {
+            console.error('Error:', error);
+            const errorText = document.createElement('p');
+            errorText.innerHTML = '<strong>Error:</strong> There was an issue with the request.';
+            chatOutput.appendChild(errorText);
+        }
+
+        // Scroll chat to bottom
+        chatOutput.scrollTop = chatOutput.scrollHeight;
+    });
+</script>
+
 </body>
 </html>
