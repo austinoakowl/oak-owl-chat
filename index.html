@@ -150,7 +150,6 @@
 
 document.getElementById('chat-form').addEventListener('submit', async function (e) {
     e.preventDefault(); // Prevents the form from reloading the page
-
     const userInput = document.getElementById('user-input').value;
     const chatOutput = document.getElementById('chat-output');
 
@@ -182,12 +181,15 @@ document.getElementById('chat-form').addEventListener('submit', async function (
 
             const data = await response.json();
 
+            // Format AI response into bullet points or paragraphs
+            let formattedResponse = formatResponse(data.response);
+
             // Add the AI's response to the conversation history
             conversationHistory.push({ role: 'assistant', content: data.response });
 
-            // Display AI's response
-            const aiText = document.createElement('p');
-            aiText.innerHTML = '<strong>AI:</strong> ' + (data.response || "No response from OpenAI");
+            // Display AI's formatted response
+            const aiText = document.createElement('div');
+            aiText.innerHTML = '<strong>AI:</strong> ' + formattedResponse;
             chatOutput.appendChild(aiText);
         }
 
@@ -200,6 +202,25 @@ document.getElementById('chat-form').addEventListener('submit', async function (
 
     // Scroll chat to bottom
     chatOutput.scrollTop = chatOutput.scrollHeight;
+});
+
+// Function to format AI response into HTML lists or paragraphs
+function formatResponse(response) {
+    let formatted = response;
+
+    // Convert numbered lists into bullet points
+    formatted = formatted.replace(/\d\.\s/g, '<li>');  // Replace '1. ' with '<li>'
+    formatted = formatted.replace(/<\/li>\s+/g, '</li>'); // Close the <li> tags properly
+
+    // Wrap the entire list with <ul> if it detects any bullet points
+    if (formatted.includes('<li>')) {
+        formatted = `<ul>${formatted}</ul>`;
+    }
+
+    // Convert double newlines to paragraph breaks for cleaner text blocks
+    formatted = formatted.replace(/\n\n/g, '<p>');
+
+    return formatted;
 });
 
 </script>
