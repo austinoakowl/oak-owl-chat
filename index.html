@@ -201,9 +201,10 @@ document.getElementById('chat-form').addEventListener('submit', async function (
             conversationHistory.push({ role: 'assistant', content: data.response });
 
             // Display AI's formatted response
-            const aiText = document.createElement('div');
-            aiText.innerHTML = '<strong>AI:</strong> ' + formattedResponse;
-            chatOutput.appendChild(aiText);
+        const aiText = document.createElement('div');
+        aiText.innerHTML = '<strong style="display: inline;">AI: </strong><span style="display: inline;">' + formattedResponse + '</span>';
+        chatOutput.appendChild(aiText);
+
         }
 
     } catch (error) {
