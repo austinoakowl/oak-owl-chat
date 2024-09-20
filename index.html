@@ -146,50 +146,52 @@
     <footer class="footer-text">Oak Owl, Inc. All Rights Reserved 2024</footer>
 
     <script>
-        let conversationHistory = [];
-
         document.getElementById('chat-form').addEventListener('submit', async function (e) {
-    e.preventDefault();
+            e.preventDefault(); // Prevents the form from reloading the page
+            console.log('Form submitted!'); // Add this line to check if the event listener is working
 
-    const userInput = document.getElementById('user-input').value;
-    const chatOutput = document.getElementById('chat-output');
 
-    // Display user's input
-    const userText = document.createElement('p');
-    userText.innerHTML = '<strong>You:</strong> ' + userInput;
-    chatOutput.appendChild(userText);
+            const userInput = document.getElementById('user-input').value;
+            const chatOutput = document.getElementById('chat-output');
 
-    // Clear the input field
-    document.getElementById('user-input').value = '';
+            // Display user's input
+            const userText = document.createElement('p');
+            userText.innerHTML = '<strong>You:</strong> ' + userInput;
+            chatOutput.appendChild(userText);
 
-    try {
-        // Call the Netlify function to send the full conversation to OpenAI
-        const response = await fetch('/.netlify/functions/openai-function', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ prompt: userInput }),
+            // Clear the input field
+            document.getElementById('user-input').value = '';
+
+            try {
+                const response = await fetch('/.netlify/functions/openai-function', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ prompt: userInput }),
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Error: ${response.statusText}`);
+                }
+
+                const data = await response.json();
+
+                // Display AI's response
+                const aiText = document.createElement('p');
+                aiText.innerHTML = '<strong>AI:</strong> ' + (data.response || "No response from OpenAI");
+                chatOutput.appendChild(aiText);
+
+            } catch (error) {
+                console.error('Error:', error);
+                const errorText = document.createElement('p');
+                errorText.innerHTML = '<strong>Error:</strong> There was an issue with the request.';
+                chatOutput.appendChild(errorText);
+            }
+
+            // Scroll chat to bottom
+            chatOutput.scrollTop = chatOutput.scrollHeight;
         });
-
-        if (!response.ok) {
-            throw new Error(`Error: ${response.statusText}`);
-        }
-
-        const data = await response.json();
-
-        // Display AI's response
-        const aiText = document.createElement('p');
-        aiText.innerHTML = '<strong>AI:</strong> ' + (data.response || "No response from OpenAI");
-        chatOutput.appendChild(aiText);
-
-    } catch (error) {
-        console.error('Error:', error);
-        const errorText = document.createElement('p');
-        errorText.innerHTML = '<strong>Error:</strong> There was an issue with the request.';
-        chatOutput.appendChild(errorText);
-    }
-
-    // Scroll chat to bottom
-    chatOutput.scrollTop = chatOutput.scrollHeight;
-});
+    </script>
+</body>
+</html>
