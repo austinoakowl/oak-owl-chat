@@ -209,21 +209,27 @@ function formatResponse(response) {
     let formatted = response;
 
     // Convert numbered lists into bullet points
-    formatted = formatted.replace(/\d\.\s/g, '<li>');  // Replace '1. ' with '<li>'
-    formatted = formatted.replace(/<\/li>\s+/g, '</li>'); // Close the <li> tags properly
+    formatted = formatted.replace(/(\d+)\.\s+/g, '<li>');  // Replace '1. ', '2. ', etc., with '<li>'
 
-    // Wrap the entire list with <ul> if it detects any bullet points
+    // Convert bullet point lists (like "- item") into list items
+    formatted = formatted.replace(/-\s+/g, '<li>');
+
+    // Wrap all list items with <ul> tag if there's any list items found
     if (formatted.includes('<li>')) {
         formatted = `<ul>${formatted}</ul>`;
     }
 
-    // Convert double newlines to paragraph breaks for cleaner text blocks
-    formatted = formatted.replace(/\n\n/g, '<p>');
+    // Convert double newlines to paragraph breaks
+    formatted = formatted.replace(/\n\n/g, '</p><p>');
+
+    // Wrap the entire response in <p> tag for cleaner paragraph structure
+    formatted = `<p>${formatted}</p>`;
 
     return formatted;
-});
+}
 
 </script>
 
 </body>
 </html>
+
