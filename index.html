@@ -183,89 +183,73 @@
         const userInputField = document.getElementById('user-input');
         const loadingIndicator = document.getElementById('loading-indicator');
 
-        document.getElementById('chat-form').addEventListener('submit', async function (e) {
-            e.preventDefault(); // Prevent form reload
-            const userInput = userInputField.value;
-            const chatOutput = document.getElementById('chat-output');
+document.getElementById('chat-form').addEventListener('submit', async function (e) {
+    e.preventDefault(); // Prevent form reload
+    const userInput = userInputField.value;
+    const chatOutput = document.getElementById('chat-output');
 
-            // Add user's message to conversation history
-            conversationHistory.push({ role: 'user', content: userInput });
+    // Add user's message to conversation history
+    conversationHistory.push({ role: 'user', content: userInput });
 
-            // Display user's input
-            const userText = document.createElement('p');
-            userText.innerHTML = '<strong>You:</strong> ' + userInput;
-            chatOutput.appendChild(userText);
+    // Display user's input
+    const userText = document.createElement('p');
+    userText.innerHTML = '<strong>You:</strong> ' + userInput;
+    chatOutput.appendChild(userText);
 
-            // Clear input field
-            userInputField.value = '';
-            userInputField.placeholder = 'Generating Response...';
+    // Clear input field
+    userInputField.value = '';
+    userInputField.placeholder = 'Generating Response...';
 
-            // Show loading indicator
-            loadingIndicator.style.display = 'block';
+    // Show loading indicator
+    loadingIndicator.style.display = 'block';
 
-           try {
-    if (conversationHistory.length > 0) {
-// Create a new EventSource instance to handle streaming
-const eventSource = new EventSource('/.netlify/functions/openai-function');
+    try {
+        if (conversationHistory.length > 0) {
+            // Make API call to OpenAI
+            const response = await fetch('/.netlify/functions/openai-function', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ conversationHistory })  // Pass the conversation history
+            });
 
-// Handle the messages (streaming data) from the backend
-eventSource.onmessage = function(event) {
-    const aiResponse = event.data;
+            if (!response.ok) {
+                throw new Error(`Error: ${response.statusText}`);
+            }
 
-    // Format AI response (if needed)
-    let formattedResponse = formatResponse(aiResponse);
+            const data = await response.json();
 
-    // Add AI response to conversation history
-    conversationHistory.push({ role: 'assistant', content: aiResponse });
+            // Format AI response
+            let formattedResponse = formatResponse(data.response);
 
-    // Display AI response
-    const aiText = document.createElement('div');
-    aiText.innerHTML = '<strong style="display: inline;">AI: </strong><span style="display: inline;">' + formattedResponse + '</span>';
-    chatOutput.appendChild(aiText);
+            // Add AI response to conversation history
+            conversationHistory.push({ role: 'assistant', content: data.response });
+
+            // Display AI response
+            const aiText = document.createElement('div');
+            aiText.innerHTML = '<strong>AI:</strong> ' + formattedResponse;
+            chatOutput.appendChild(aiText);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        const errorText = document.createElement('p');
+        errorText.innerHTML = '<strong>Error:</strong> There was an issue with the request.';
+        chatOutput.appendChild(errorText);
+    } finally {
+        userInputField.placeholder = 'Type your question here...';
+        loadingIndicator.style.display = 'none'; // Hide loading indicator
+    }
 
     // Scroll chat to bottom
     chatOutput.scrollTop = chatOutput.scrollHeight;
-};
+});
 
-// Handle errors from EventSource
-eventSource.onerror = function(event) {
-    console.error('Error in streaming response:', event);
-
-    // Add error message to the chat output
-    const errorText = document.createElement('p');
-    errorText.innerHTML = '<strong>Error:</strong> There was an issue with the request.';
-    chatOutput.appendChild(errorText);
-
-    // Close the EventSource connection on error
-    eventSource.close();
-};
-
-// Optionally, handle when the connection to the server is closed
-eventSource.onclose = function() {
-    console.log('Connection to the server closed.');
-    eventSource.close();  // Close the EventSource when done
-};
-
-// Handle connection opening (optional)
-eventSource.onopen = function() {
-    console.log('Connection to server established.');
-};
-
-    }
-} catch (error) {
-    console.error('Error in frontend:', error);
-    const errorText = document.createElement('p');
-    errorText.innerHTML = '<strong>Error:</strong> There was an issue with the request.';
-    chatOutput.appendChild(errorText);
-} finally {
-    userInputField.placeholder = 'Type your question here...';
-    loadingIndicator.style.display = 'none'; // Hide loading indicator
+// Helper function to format the AI response
+function formatResponse(response) {
+    return response.replace(/\n/g, '<br>');  // Converts newlines to HTML breaks for better formatting
 }
 
-
-            // Scroll chat to bottom
-            chatOutput.scrollTop = chatOutput.scrollHeight;
-        });
 
         // Function to format AI response into bullet points or paragraphs
         function formatResponse(response) {
