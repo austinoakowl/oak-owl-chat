@@ -7,6 +7,6 @@
     "start": "vercel dev"
   },
   "dependencies": {
-    // Add any other dependencies you need here
+    "express": "^4.17.1"
   }
 }
