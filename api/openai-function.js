@@ -10,7 +10,7 @@ export default async function handler(req, res) {
 
     try {
         const response = await openai.createChatCompletion({
-            model: "o1-preview",  // Change to your desired model
+            model: "^4.0.0",  // Change to your desired model
             messages: conversationHistory,
         });
 
