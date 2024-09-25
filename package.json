@@ -1,0 +1,12 @@
+{
+  "name": "my-vercel-app",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "build": "echo 'Build step goes here'",
+    "start": "vercel dev"
+  },
+  "dependencies": {
+    "openai": "^4.0.0"
+  }
+}
