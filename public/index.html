@@ -1,1 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Real Estate Assistant</title>
+    <style>
+        /* General body styling */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: white;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+        }
+
+        /* Center the logo at the top */
+        .logo-container {
+            position: relative;
+            top: 20px;
+            display: flex;
+            justify-content: center;
+            width: 100%;
+            margin-bottom: 10px; /* Add more space below the logo */
+        }
+
+        .logo-container img {
+            width: 150px;
+            height: auto;
+        }
+
+        /* Add header text between logo and chat box */
+        .header-text {
+            font-size: 32px;
+            text-align: center;
+            margin-top: 10px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        /* Chat container styling */
+        .chat-container {
+            width: 90%;
+            max-width: 900px;
+            height: 60vh;
+            border: 1px solid #ccc;
+            padding: 20px;
+            border-radius: 10px;
+            background-color: #f9f9f9;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            overflow-y: auto;
+            margin-bottom: 10px;
+        }
+
+        /* Chat output area */
+        #chat-output {
+            border: 1px solid #ddd;
+            height: calc(100% - 60px);
+            padding: 10px;
+            overflow-y: auto;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            background-color: #fff;
+        }
+
+        /* Chat form styling */
+        #chat-form {
+            display: flex;
+            align-items: center;
+            width: 100%;
+        }
+
+        /* Chat input and button styling */
+        #chat-form input {
+            width: calc(100% - 60px);
+            padding: 10px 15px;
+            border-radius: 25px;
+            border: none;
+            background-color: #f9f9f9;
+            font-size: 16px;
+            margin-right: 10px;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        #chat-form input:focus {
+            outline: none;
+        }
+
+        /* Chat send button styling */
+        #chat-form button {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: transparent;
+            border: 2px solid #6200ea;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            padding: 0;
+        }
+
+        #chat-form button i {
+            color: #6200ea;
+        }
+
+        #chat-form button:hover {
+            background-color: transparent;
+        }
+
+        #chat-form button:focus {
+            outline: none;
+            box-shadow: none;
+        }
+
+        /* Footer styling */
+        .footer-text {
+            width: 100%;
+            text-align: center;
+            font-size: 14px;
+            color: #555;
+            margin-top: 10px;
+            position: relative;
+            bottom: 0;
+        }
+
+        /* Media query for mobile devices */
+        @media (max-width: 600px) {
+            .chat-container {
+                height: 50vh;
+            }
+
+            .footer-text {
+                margin-top: 15px;
+                position: relative;
+                bottom: 0;
+            }
+        }
+
+        /* Loading text styling */
+        .loading-indicator {
+            display: none;
+            color: #6200ea;
+            font-style: italic;
+            margin-top: 10px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Company logo at the top center -->
+    <div class="logo-container">
+        <img src="https://i.ibb.co/QXjrfTY/Screenshot-2024-09-19-at-3-53-20-PM.png" alt="Company Logo">
+    </div>
+
+    <!-- Add heading text between logo and chat box -->
+    <h1 class="header-text">AI Real Estate Assistant</h1>
+
+    <div class="chat-container">
+        <div id="chat-output"></div>
+        <form id="chat-form">
+            <input type="text" id="user-input" placeholder="Type your question here..." required>
+            <button type="submit">
+                <i class="fas fa-paper-plane"></i> <!-- Font Awesome arrow icon -->
+            </button>
+        </form>
+
+        <!-- Loading indicator -->
+        <p id="loading-indicator" style="display: none;">Processing...</p>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer-text">Oak Owl, Inc. All Rights Reserved 2024</footer>
+
+    <script>
+        let conversationHistory = [];
+        const userInputField = document.getElementById('user-input');
+        const loadingIndicator = document.getElementById('loading-indicator');
+
+document.getElementById('chat-form').addEventListener('submit', async function (e) {
+    e.preventDefault(); // Prevent form reload
+    const userInput = userInputField.value;
+    const chatOutput = document.getElementById('chat-output');
+
+    // Add user's message to conversation history
+    conversationHistory.push({ role: 'user', content: userInput });
+
+    // Display user's input
+    const userText = document.createElement('p');
+    userText.innerHTML = '<strong>You:</strong> ' + userInput;
+    chatOutput.appendChild(userText);
+
+    // Clear input field
+    userInputField.value = '';
+    userInputField.placeholder = 'Generating Response...';
+
+    // Show loading indicator
+    loadingIndicator.style.display = 'block';
+
+    try {
+        if (conversationHistory.length > 0) {
+            // Make API call to OpenAI
+            const response = await fetch('/api/openai-function', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ conversationHistory })  // Pass the conversation history
+            });
+
+            if (!response.ok) {
+                throw new Error(`Error: ${response.statusText}`);
+            }
+
+            const data = await response.json();
+
+            // Format AI response
+            let formattedResponse = formatResponse(data.response);
+
+            // Add AI response to conversation history
+            conversationHistory.push({ role: 'assistant', content: data.response });
+
+            // Display AI response
+            const aiText = document.createElement('div');
+            aiText.innerHTML = '<strong>AI Katie:</strong> ' + formattedResponse;
+            chatOutput.appendChild(aiText);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        const errorText = document.createElement('p');
+        errorText.innerHTML = '<strong>Error:</strong> There was an issue with the request.';
+        chatOutput.appendChild(errorText);
+    } finally {
+        userInputField.placeholder = 'Type your question here...';
+        loadingIndicator.style.display = 'none'; // Hide loading indicator
+    }
+
+    // Scroll chat to bottom
+    chatOutput.scrollTop = chatOutput.scrollHeight;
+});
+
+// Helper function to format the AI response
+function formatResponse(response) {
+    return response.replace(/\n/g, '<br>');  // Converts newlines to HTML breaks for better formatting
+}
+
+
+        // Function to format AI response into bullet points or paragraphs
+        function formatResponse(response) {
+            let formatted = response;
+
+            // Convert numbered lists into bullet points
+            formatted = formatted.replace(/\d\.\s/g, '<li>');  // Replace '1. ' with '<li>'
+            formatted = formatted.replace(/<\/li>\s+/g, '</li>'); // Close the <li> tags properly
+
+            if (formatted.includes('<li>')) {
+                formatted = `<ul>${formatted}</ul>`;
+            }
+
+            formatted = formatted.replace(/\n\n/g, '<p>');
+
+            return formatted;
+        }
+    </script>
+</body>
+</html>
 
