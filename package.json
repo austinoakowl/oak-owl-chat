@@ -8,6 +8,6 @@
   },
   "dependencies": {
     "openai": "^4.0.0",
-    "axios": "^0.21.1"  // Add the correct version if needed
+    "axios": "^0.21.1"  
   }
 }
