@@ -16,19 +16,20 @@ exports.openaiFunction = functions.https.onRequest((req, res) => {
         const { conversationHistory } = req.body;
 
         try {
-            const response = await openai.chat.completions.create({
-                model: 'gpt-3.5-turbo',
-                messages: conversationHistory,
-            });
+    const response = await openai.chat.completions.create({
+        model: 'o1-preview',
+        messages: conversationHistory,
+    });
 
-            res.status(200).send({
-                response: response.choices[0].message.content,
-            });
-        } catch (error) {
-            res.status(500).send({
-                error: error.message,
-            });
-        }
+    res.status(200).send({
+        response: response.choices[0].message.content,
+    });
+} catch (error) {
+    console.error('OpenAI API Error:', error);
+    res.status(500).send({
+        error: 'Internal Server Error. Please try again later.',
+    });
+}
     });
 });
 
