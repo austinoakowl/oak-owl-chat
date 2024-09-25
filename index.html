@@ -206,7 +206,7 @@ document.getElementById('chat-form').addEventListener('submit', async function (
     try {
         if (conversationHistory.length > 0) {
             // Make API call to OpenAI
-            const response = await fetch('/.netlify/functions/openai-function', {
+            const response = await fetch('/api/openai-function', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
